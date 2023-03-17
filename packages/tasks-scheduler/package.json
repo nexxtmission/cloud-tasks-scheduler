@@ -1,18 +1,28 @@
 {
   "name": "cloud-tasks-scheduler",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Tasks scheduler module usign GCP Cloud Tasks",
   "author": "LeandroTorresSicilia <jtorressicilia@gmail.com>",
   "license": "ISC",
   "main": "./lib/index.js",
+  "typings": "lib/types.d.ts",
   "files": [
     "lib"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "clean": "lerna exec -- rm -rf ./lib",
     "lint": "eslint . --ext .ts && tsc",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@google-cloud/tasks": "^3.1.1"
+    "@google-cloud/tasks": "^3.1.1",
+    "firebase-admin": "^11.5.0"
+  },
+  "peerDependencies": {
+    "express": ">=4.0.0"
   }
 }
