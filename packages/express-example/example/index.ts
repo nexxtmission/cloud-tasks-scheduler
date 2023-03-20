@@ -18,7 +18,7 @@ const scheduler = new TaskScheduler({
     })],
     webhook: {
         expressInstance: expressApp,
-        baseUrl: 'https://3fed-67-188-16-40.ngrok.io', // TODO: document how to use ngrok to set the URL
+        baseUrl: 'https://9d52-67-188-16-40.ngrok.io', // TODO: document how to use ngrok to set the URL
         pathname: '/test',
     },
 });
@@ -32,7 +32,10 @@ const scheduler = new TaskScheduler({
             message: {
                 title: 'test notification',
                 body: 'this is a message text',
-            }
+            },
+        },
+        metadata: {
+            foo: 'bar',
         },
     });
     // await scheduler.delete('projects/rainbow-modules/locations/us-central1/queues/testing-queue/tasks/55252566736411927541') // TODO: document delete task
