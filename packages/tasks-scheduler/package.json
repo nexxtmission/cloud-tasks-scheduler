@@ -5,7 +5,7 @@
   "author": "LeandroTorresSicilia <jtorressicilia@gmail.com>",
   "license": "ISC",
   "main": "./lib/index.js",
-  "typings": "lib/types.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib"
   ],
@@ -15,14 +15,18 @@
   "scripts": {
     "clean": "lerna exec -- rm -rf ./lib",
     "lint": "eslint . --ext .ts && tsc",
-    "build": "tsc",
+    "build": "tsc && yarn copy-d-ts-files",
+    "copy-d-ts-files": "copyfiles -u 1 \"src/**/*.d.ts\" lib",
     "prepublishOnly": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@google-cloud/tasks": "^3.1.1",
-    "firebase-admin": "^11.5.0"
+    "@google-cloud/tasks": "^3.1.1"
   },
   "peerDependencies": {
-    "express": ">=4.0.0"
+    "express": ">=4.0.0",
+    "firebase-admin": ">=8.0.0"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1"
   }
 }

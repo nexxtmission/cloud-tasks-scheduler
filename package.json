@@ -5,11 +5,9 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "lerna exec -- rm -rf ./lib && lerna run clean",
     "build": "lerna run build",
     "bootstrap": "npx lerna bootstrap",
-    "lint": "lerna run lint",
-    "publish-packages": "yarn clean && yarn build && lerna publish"
+    "lint": "lerna run lint"
   },
   "devDependencies": {
     "lerna": "^5.6.2",
