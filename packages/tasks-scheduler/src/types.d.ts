@@ -10,7 +10,7 @@ export interface PushNotificationExecutorPayload {
     };
 }
 
-interface SmsNotificationExecutorPayload {
+export interface SmsNotificationExecutorPayload {
     phone: string;
     // message: string; // TODO: PushNotificationExecutorPayload and SmsNotificationExecutorPayload are mixing types in executor then if you use message also here in executor it fails because it get `stirng | { title, body }` as the type
 }
@@ -22,11 +22,14 @@ export interface TypeMap {
 
 export type NotificationName = keyof TypeMap;
 
+export type Metadata = Record<string, unknown>;
+
 export type Task<T extends NotificationName> = {
     // id: string;
     name: T;
     scheduleTime?: number; // TODO: check if this will be required and also how pass this? inSeconds or a timestamp scheduleTime?
     payload: TypeMap[T];
+    metadata?: Metadata;
 };
 
 export interface TaskSchedulerI {
@@ -36,7 +39,7 @@ export interface TaskSchedulerI {
 
 export interface TaskExecutorI {
     name: NotificationName;
-    execute: <T extends NotificationName>(payload: TypeMap[T]) => void;
+    execute: <T extends NotificationName>(payload: TypeMap[T], metadata?: Metadata) => void;
 }
 
 interface ServiceAccount {
