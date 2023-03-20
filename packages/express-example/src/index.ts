@@ -4,6 +4,8 @@ const port = 8080;
 
 const app = express();
 
+app.use(express.json());
+
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
@@ -11,3 +13,5 @@ app.get('/', (req: Request, res: Response) => {
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
+
+export default app;
