@@ -40,8 +40,9 @@ class TaskScheduler implements TaskSchedulerI {
 
         expressInstance.post(pathname, async (req: Request, res: Response) => {
             await Promise.all([
-                this.executors.map(executor => { // TODO: check what to do here with all executors
-                    executor.execute(req.body);
+                this.executors.map(executor => { // TODO: check what to do here with all executors, change this to find only the executor
+                    const { payload, metadata } = req.body;
+                    executor.execute(payload, metadata);
                 })
             ]);
             return res.sendStatus(200);
@@ -57,7 +58,7 @@ class TaskScheduler implements TaskSchedulerI {
                 },
                 httpMethod: 'POST',
                 url: this.url,
-                body: payload ? Buffer.from(JSON.stringify(payload)).toString('base64') : undefined,
+                body: task ? Buffer.from(JSON.stringify(task)).toString('base64') : undefined,
             },
         };
 
@@ -115,6 +116,7 @@ class PushNoticationExecutor implements TaskExecutorI {
         this.firebaseAdmin.messaging().sendToDevice(registrationToken, {
             notification: message,
         });
+        // TODO: add event listener here to let you know when the notification was sent
     };
 }
 

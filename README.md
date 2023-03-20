@@ -32,7 +32,14 @@ const { id } = await scheduler.add({
         message: {
             title: 'test notification',
             body: 'this is a test message',
-        }
+        },
+    },
+    metadata: {
+        foo: 'bar',
     },
 });
 ```
+
+## Using local example
+
+Run: `ts-node packages/express-example/example/index.ts`

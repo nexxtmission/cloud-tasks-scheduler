@@ -1,6 +1,6 @@
 {
   "name": "cloud-tasks-scheduler",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Tasks scheduler module usign GCP Cloud Tasks",
   "author": "LeandroTorresSicilia <jtorressicilia@gmail.com>",
   "license": "ISC",
