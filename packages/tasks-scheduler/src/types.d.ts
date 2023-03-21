@@ -1,4 +1,4 @@
-import { Express } from 'express';
+import { IRouter } from 'express';
 import admin from 'firebase-admin';
 
 export interface PushNotificationExecutorPayload {
@@ -61,7 +61,7 @@ export interface TaskSchedulerConfigI {
     serviceAccount: ServiceAccount;
     executors: Array<TaskExecutorI>;
     webhook: {
-        expressInstance: Express;
+        expressInstance: IRouter;
         baseUrl: string;
         pathname: string; // TODO: should pathname be optional and we set a pathname by default?
     };
