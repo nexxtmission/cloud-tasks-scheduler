@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import admin from 'firebase-admin';
 import { TaskScheduler, PushNoticationExecutor } from 'cloud-tasks-scheduler';
 import serviceAccount from './service-account.json';
@@ -38,7 +39,8 @@ const scheduler = new TaskScheduler({
             foo: 'bar',
         },
     });
+    console.log(id);
     // await scheduler.delete('projects/rainbow-modules/locations/us-central1/queues/testing-queue/tasks/55252566736411927541') // TODO: document delete task
     // const res = await scheduler.get('projects/rainbow-modules/locations/us-central1/queues/testing-queue/tasks/55252566736411927541') // TODO: document get task
     console.log('Success!!!');
-})()
+})();
