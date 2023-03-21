@@ -16,6 +16,8 @@ jobs:
       - run:
           command: yarn bootstrap --no-ci
       - run:
+          command: yarn build
+      - run:
           command: yarn lint
 
 workflows:
