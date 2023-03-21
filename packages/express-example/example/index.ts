@@ -1,7 +1,9 @@
-/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/ban-ts-comment, no-console */
 import admin from 'firebase-admin';
 import { TaskScheduler, PushNoticationExecutor } from 'cloud-tasks-scheduler';
+// @ts-ignore
 import serviceAccount from './service-account.json';
+// @ts-ignore
 import notificationServiceAccount from './notification-service-account.json';
 import expressApp from '../src';
 
