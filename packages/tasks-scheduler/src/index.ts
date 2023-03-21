@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { CloudTasksClient, protos } from '@google-cloud/tasks';
 import { Request, Response } from 'express';
 import admin from 'firebase-admin';
@@ -13,8 +14,11 @@ import {
 
 class TaskScheduler implements TaskSchedulerI {
     private client: CloudTasksClient;
+
     private queue: string;
+
     private executors: TaskExecutorI[];
+
     private url: string;
 
     constructor(config: TaskSchedulerConfigI) {
@@ -42,7 +46,7 @@ class TaskScheduler implements TaskSchedulerI {
             await Promise.all([
                 this.executors.map(executor => { // TODO: check what to do here with all executors, change this to find only the executor
                     const { payload, metadata } = req.body;
-                    executor.execute(payload, metadata);
+                    return executor.execute(payload, metadata);
                 })
             ]);
             return res.sendStatus(200);
@@ -103,6 +107,7 @@ class TaskScheduler implements TaskSchedulerI {
 
 class PushNoticationExecutor implements TaskExecutorI {
     name: NotificationName;
+
     private firebaseAdmin: admin.app.App;
 
     constructor({ firebaseAdmin }: PushNoticationExecutorConfigI) {
@@ -111,13 +116,14 @@ class PushNoticationExecutor implements TaskExecutorI {
     }
 
     execute<T extends NotificationName>(payload: TypeMap[T]) { // TODO: improve typing here to simply use PushNotificationExecutorPayload
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const { registrationToken, message } = payload; // TODO: improve typing here
         this.firebaseAdmin.messaging().sendToDevice(registrationToken, {
             notification: message,
         });
         // TODO: add event listener here to let you know when the notification was sent
-    };
+    }
 }
 
 export { TaskScheduler, PushNoticationExecutor };
