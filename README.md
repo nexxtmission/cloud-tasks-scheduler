@@ -42,7 +42,7 @@ const { id } = await scheduler.add({
 
 ## Using the local example
 
-Run: `ts-node packages/express-example/example/index.ts`
+Run: `ts-node packages/express-example/example/file-name-example.ts`
 
 ## Publish the `cloud-tasks-scheduler` package
 
