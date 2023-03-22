@@ -1,5 +1,6 @@
 import { Express } from 'express';
 import admin from 'firebase-admin';
+import TwilioSDK from 'twilio';
 
 export interface PushNotificationExecutorPayload {
     registrationToken: string;
@@ -11,7 +12,9 @@ export interface PushNotificationExecutorPayload {
 }
 
 export interface SmsNotificationExecutorPayload {
-    phone: string;
+    from: string;
+    to: string;
+    text: string;
     // message: string; // TODO: PushNotificationExecutorPayload and SmsNotificationExecutorPayload are mixing types in executor then if you use message also here in executor it fails because it get `stirng | { title, body }` as the type
 }
 
@@ -69,4 +72,8 @@ export interface TaskSchedulerConfigI {
 
 export interface PushNoticationExecutorConfigI {
     firebaseAdmin: admin.app.App;
+}
+
+export interface SmsNoticationExecutorConfigI {
+    twilioClient: TwilioSDK.Twilio;
 }
