@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment, no-console */
+import { TaskScheduler, SmsNotificationExecutor, PushNoticationExecutor } from 'cloud-tasks-scheduler';
+import twilio from 'twilio';
 import admin from 'firebase-admin';
-import { TaskScheduler, PushNoticationExecutor } from 'cloud-tasks-scheduler';
 // @ts-ignore
 import serviceAccount from './service-account.json';
 // @ts-ignore
@@ -13,23 +14,44 @@ const firebaseAdmin = admin.initializeApp({
 
 const registrationToken = '';
 
+const accountSid = '';
+const authToken = '';
+
+const from = '';
+const to = '';
+
+const client = twilio(accountSid, authToken);
+
 const scheduler = new TaskScheduler({
     defaultQueue: 'testing-queue',
     serviceAccount,
-    executors: [new PushNoticationExecutor({
-        firebaseAdmin,
-    })],
+    executors: [
+        new PushNoticationExecutor({
+            firebaseAdmin,
+        }),
+        new SmsNotificationExecutor({
+            twilioClient: client,
+        }),
+    ],
     webhook: {
         expressInstance: expressApp,
-        baseUrl: 'https://9d52-67-188-16-40.ngrok.io', // TODO: document how to use ngrok to set the URL
-        pathname: '/test',
+        baseUrl: 'https://9d52-67-188-16-40.ngrok.io',
     },
 });
 
 (async () => {
-    const { id } = await scheduler.add({
+    await scheduler.add({
+        name: 'SmsNotification',
+        scheduleTime: Date.now() + 10000,
+        payload: {
+            text: 'This is a test message from Cloud Task',
+            from,
+            to,
+        },
+    });
+    await scheduler.add({
         name: 'PushNotification',
-        scheduleTime: Date.now() + 20000, // in 20 seconds
+        scheduleTime: Date.now() + 10000,
         payload: {
             registrationToken,
             message: {
@@ -37,10 +59,6 @@ const scheduler = new TaskScheduler({
                 body: 'this is a message text',
             },
         },
-        metadata: {
-            foo: 'bar',
-        },
     });
-    console.log(id);
     console.log('Success!!!');
 })();

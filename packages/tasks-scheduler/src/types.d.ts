@@ -4,7 +4,6 @@ import TwilioSDK from 'twilio';
 
 export interface PushNotificationExecutorPayload {
     registrationToken: string;
-    // message: admin.messaging.MessagingPayload; // TODO: check what typing use here
     message: {
         title?: string;
         body?: string;
@@ -28,21 +27,22 @@ export type NotificationName = keyof TypeMap;
 export type Metadata = Record<string, unknown>;
 
 export type Task<T extends NotificationName> = {
-    // id: string;
+    id: string;
     name: T;
-    scheduleTime?: number; // TODO: check if this will be required and also how pass this? inSeconds or a timestamp scheduleTime?
+    scheduleTime?: number;
     payload: TypeMap[T];
     metadata?: Metadata;
 };
 
 export interface TaskSchedulerI {
     add<T extends NotificationName>(task: Omit<Task<T>, "id">): Promise<Task<T>>;
-    delete(taskId: string): Promise<string>;
+    delete(id: string): Promise<boolean>;
 }
 
 export interface TaskExecutorI {
     name: NotificationName;
     execute: <T extends NotificationName>(payload: TypeMap[T], metadata?: Metadata) => void;
+    // getQueue?: () => string; // TODO: implement this to pass queue in executor
 }
 
 interface ServiceAccount {
@@ -66,7 +66,7 @@ export interface TaskSchedulerConfigI {
     webhook: {
         expressInstance: Express;
         baseUrl: string;
-        pathname: string; // TODO: should pathname be optional and we set a pathname by default?
+        pathname?: string;
     };
 }
 

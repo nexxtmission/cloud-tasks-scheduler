@@ -24,4 +24,4 @@ class SmsNotificationExecutor implements TaskExecutorI {
     }
 }
 
-export default SmsNotificationExecutor; // TODO: check this name since we could use other services to send sms
+export default SmsNotificationExecutor;
