@@ -1,5 +1,6 @@
 import { CloudTasksClient, protos } from '@google-cloud/tasks';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import isValidGcpToken from './isValidGcpToken';
 import {
     TaskSchedulerI,
     TaskSchedulerConfigI,
@@ -16,6 +17,8 @@ class TaskScheduler implements TaskSchedulerI {
     private executors: Record<NotificationName | string, TaskExecutorI | undefined>;
 
     private url: string;
+
+    private serviceAccountEmail: string;
 
     constructor(config: TaskSchedulerConfigI) {
         const {
@@ -40,7 +43,13 @@ class TaskScheduler implements TaskSchedulerI {
             [executor.name]: executor,
         }), {});
         this.url = new URL(pathname, baseUrl).href;
+        this.serviceAccountEmail = serviceAccount.client_email;
 
+        expressInstance.use((_, res: Response, next: NextFunction) => {
+            res.locals.serviceAccount = serviceAccount
+            return next();
+        })
+        expressInstance.use(isValidGcpToken);
         expressInstance.post(pathname, async (req: Request<object, object, Task<NotificationName>>, res: Response) => {
             const { name, payload, metadata } = req.body;
             if (this.executors[name]) {
@@ -60,6 +69,9 @@ class TaskScheduler implements TaskSchedulerI {
                 httpMethod: 'POST',
                 url: this.url,
                 body: task ? Buffer.from(JSON.stringify(task)).toString('base64') : undefined,
+                oidcToken: {
+                    serviceAccountEmail: this.serviceAccountEmail,
+                }
             },
         };
 

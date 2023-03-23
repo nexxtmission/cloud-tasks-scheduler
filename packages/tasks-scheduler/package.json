@@ -20,7 +20,8 @@
     "prepublishOnly": "yarn clean && yarn build"
   },
   "dependencies": {
-    "@google-cloud/tasks": "^3.1.1"
+    "@google-cloud/tasks": "^3.1.1",
+    "google-auth-library": "^8.7.0"
   },
   "peerDependencies": {
     "express": ">=4.0.0",
