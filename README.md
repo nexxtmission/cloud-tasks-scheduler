@@ -40,6 +40,12 @@ const { id } = await scheduler.add({
 });
 ```
 
+### if you want to remove a task
+
+```js
+const res = await scheduler.delete(id); // res will be a boolean indicating if the deletion was success or not
+```
+
 ## Using the local example
 
 Run: `ts-node packages/express-example/example/file-name-example.ts`

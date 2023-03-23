@@ -13,7 +13,7 @@ class TaskScheduler implements TaskSchedulerI {
 
     private queue: string;
 
-    private executors: TaskExecutorI[];
+    private executors: Record<NotificationName | string, TaskExecutorI | undefined>;
 
     private url: string;
 
@@ -26,7 +26,7 @@ class TaskScheduler implements TaskSchedulerI {
             webhook: {
                 expressInstance,
                 baseUrl,
-                pathname, // TODO: we will use a default pathname?
+                pathname = '/cloud-task/webhook',
             },
         } = config;
 
@@ -35,22 +35,23 @@ class TaskScheduler implements TaskSchedulerI {
         });
         const queue = this.client.queuePath(serviceAccount.project_id, defaultLocation, defaultQueue);
         this.queue = queue;
-        this.executors = executors;
+        this.executors = executors.reduce((acc, executor) => ({
+            ...acc,
+            [executor.name]: executor,
+        }), {});
         this.url = new URL(pathname, baseUrl).href;
 
-        expressInstance.post(pathname, async (req: Request, res: Response) => {
-            await Promise.all([
-                this.executors.map(executor => { // TODO: check what to do here with all executors, change this to find only the executor
-                    const { payload, metadata } = req.body;
-                    return executor.execute(payload, metadata);
-                })
-            ]);
+        expressInstance.post(pathname, async (req: Request<object, object, Task<NotificationName>>, res: Response) => {
+            const { name, payload, metadata } = req.body;
+            if (this.executors[name]) {
+                await this.executors[name]?.execute(payload, metadata);
+            }
             return res.sendStatus(200);
         });
     }
 
-    async add<T extends NotificationName>(task: Task<T>) {
-        const { payload, scheduleTime, name } = task;
+    async add<T extends NotificationName>(task: Omit<Task<T>, "id">) {
+        const { scheduleTime } = task;
         const taskData: protos.google.cloud.tasks.v2.ITask = {
             httpRequest: {
                 headers: {
@@ -73,30 +74,22 @@ class TaskScheduler implements TaskSchedulerI {
             task: taskData,
         };
         const [response] = await this.client.createTask(request);
-        // console.log(`Created task ${response.name}`);
-        // console.log(`Task response:`, JSON.stringify(response, null, 2));
-        // return response.name; // TODO: here we can simply return the name (a string) or we can return and object with { name: string, createdTime: Date | Timestamp, scheduledTime: Date | Timestamp }
+        const arr = response.name?.split('/') || [];
         return {
-            id: response.name, // TODO: add id to Task type
-            name,
-            scheduleTime,
-            payload,
-        }
+            ...task,
+            id: arr[arr.length -1],
+        };
     }
 
-    // TODO: discuss if we will have a get method
-    // async get(name: string) {
-    //     const [response] = await this.client.getTask({
-    //         name,
-    //     });
-    //     return response; // TODO: check what to return here
-    // }
-
-    async delete(name: string) {
-        await this.client.deleteTask({
-            name
-        });
-        return name;
+    async delete(id: string) {
+        try {
+            await this.client.deleteTask({
+                name: `${this.queue}/tasks/${id}`,
+            });
+            return true;
+        } catch (error) {
+            return false
+        }
     }
 }
 
