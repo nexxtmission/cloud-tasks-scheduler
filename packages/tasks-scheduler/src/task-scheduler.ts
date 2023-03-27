@@ -93,6 +93,20 @@ class TaskScheduler implements TaskSchedulerI {
         };
     }
 
+    async get(id: string) {
+        try {
+            const [response] = await this.client.getTask({
+                name: `${this.queue}/tasks/${id}`,
+            });
+            return {
+                id,
+                scheduleTime: Number(response.scheduleTime?.seconds) * 1000
+            }
+        } catch (error) {
+            return null
+        }
+    }
+
     async delete(id: string) {
         try {
             await this.client.deleteTask({
