@@ -20,6 +20,10 @@ class TaskScheduler implements TaskSchedulerI {
 
     private serviceAccountEmail: string;
 
+    private projectId: string;
+
+    private location: string;
+
     constructor(config: TaskSchedulerConfigI) {
         const {
             defaultQueue,
@@ -36,14 +40,15 @@ class TaskScheduler implements TaskSchedulerI {
         this.client = new CloudTasksClient({
             credentials: serviceAccount,
         });
-        const queue = this.client.queuePath(serviceAccount.project_id, defaultLocation, defaultQueue);
-        this.queue = queue;
+        this.queue = this.client.queuePath(serviceAccount.project_id, defaultLocation, defaultQueue);
         this.executors = executors.reduce((acc, executor) => ({
             ...acc,
             [executor.name]: executor,
         }), {});
         this.url = new URL(pathname, baseUrl).href;
         this.serviceAccountEmail = serviceAccount.client_email;
+        this.projectId = serviceAccount.project_id;
+        this.location = defaultLocation;
 
         expressInstance.use((_, res: Response, next: NextFunction) => {
             res.locals.serviceAccount = serviceAccount
@@ -81,20 +86,41 @@ class TaskScheduler implements TaskSchedulerI {
             };
         }
 
-        const request: protos.google.cloud.tasks.v2.ICreateTaskRequest = {
-            parent: this.queue,
-            task: taskData,
-        };
-        const [response] = await this.client.createTask(request);
-        const arr = response.name?.split('/') || [];
-        return {
-            ...task,
-            id: arr[arr.length -1],
-        };
+        try {
+            const [response] = await this.client.createTask({
+                parent: this.queue,
+                task: taskData,
+            });
+            const arr = response.name?.split('/') || [];
+            return {
+                ...task,
+                id: arr[arr.length -1],
+            };
+        } catch (error) {
+            if ((error as { code: number }).code === 9) {
+                await this.client.createQueue({
+                    parent: this.client.locationPath(this.projectId, this.location),
+                    queue: {
+                        name: this.queue,
+                    }
+                });
+                const [response] = await this.client.createTask({
+                    parent: this.queue,
+                    task: taskData,
+                });
+                const arr = response.name?.split('/') || [];
+                return {
+                    ...task,
+                    id: arr[arr.length -1],
+                };
+            }
+            throw error;
+        }
     }
 
     async get(id: string) {
         try {
+            // TODO: here we are getting an empty buffer in the body, we need the body data to get all the task info we manage to be consistent with the add api
             const [response] = await this.client.getTask({
                 name: `${this.queue}/tasks/${id}`,
             });

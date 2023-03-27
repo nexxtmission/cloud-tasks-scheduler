@@ -21,7 +21,7 @@ const scheduler = new TaskScheduler({
     })],
     webhook: {
         expressInstance: expressApp,
-        baseUrl: 'https://9d52-67-188-16-40.ngrok.io',
+        baseUrl: 'https://e8ec-67-188-248-18.ngrok.io',
         pathname: '/test',
     },
 });
