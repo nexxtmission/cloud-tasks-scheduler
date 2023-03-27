@@ -36,6 +36,7 @@ export type Task<T extends NotificationName> = {
 
 export interface TaskSchedulerI {
     add<T extends NotificationName>(task: Omit<Task<T>, "id">): Promise<Task<T>>;
+    get(id: string): Promise<{ id: string, scheduleTime: number } | null>;
     delete(id: string): Promise<boolean>;
 }
 
