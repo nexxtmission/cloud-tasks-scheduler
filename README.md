@@ -2,6 +2,13 @@
 
 > Module to schedule tasks to Google Cloud Tasks. Inside this module we provide executors then you don't need to implement a handler for the task
 
+## Before use
+
+1. Optional: Create a queue in GCP. If the queue is not already created then we create it for you the first time
+2. Service account used to create the `TaskScheduler` must have:
+   1. `Cloud Tasks Admin` role (for enqueue task)
+   2. `Service Account User` role (used for authentication in the handler endpoint)
+
 ## Usage
 
 ```js
@@ -18,7 +25,7 @@ const scheduler = new TaskScheduler({
     webhook: {
         expressInstance: expressApp, // express app instance
         baseUrl: 'https://api.my-backend.com', // base url, this could be an env variable since it can change between environments
-        pathname: '/push-notification/send', // endpoint pathname you want to use for the handler thus it does not conflict with your current endpoints
+        pathname: '/push-notification/send', // endpoint pathname you want to use for the handler thus it does not conflict with your current endpoints, its default value is `/cloud-task/webhook`
     },
 });
 
