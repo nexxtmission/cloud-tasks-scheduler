@@ -50,18 +50,20 @@ class TaskScheduler implements TaskSchedulerI {
         this.projectId = serviceAccount.project_id;
         this.location = defaultLocation;
 
-        expressInstance.use((_, res: Response, next: NextFunction) => {
-            res.locals.serviceAccount = serviceAccount
-            return next();
-        })
-        expressInstance.use(isValidGcpToken);
-        expressInstance.post(pathname, async (req: Request<object, object, Task<NotificationName>>, res: Response) => {
-            const { name, payload, metadata } = req.body;
-            if (this.executors[name]) {
-                await this.executors[name]?.execute(payload, metadata);
-            }
-            return res.sendStatus(200);
-        });
+        expressInstance.post(
+            pathname,
+            (_, res: Response, next: NextFunction) => {
+                res.locals.serviceAccount = serviceAccount
+                return next();
+            },
+            isValidGcpToken,
+            async (req: Request<object, object, Task<NotificationName>>, res: Response) => {
+                const { name, payload, metadata } = req.body;
+                if (this.executors[name]) {
+                    await this.executors[name]?.execute(payload, metadata);
+                }
+                return res.sendStatus(200);
+            });
     }
 
     async add<T extends NotificationName>(task: Omit<Task<T>, "id">) {
