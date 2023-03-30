@@ -1,12 +1,12 @@
 import admin from 'firebase-admin';
-import { TaskExecutorI, NotificationName, PushNoticationExecutorConfigI, TypeMap } from '../types';
+import { TaskExecutorI, NotificationName, PushNotificationExecutorConfigI, TypeMap } from '../types';
 
-class PushNoticationExecutor implements TaskExecutorI {
+class PushNotificationExecutor implements TaskExecutorI {
     name: NotificationName;
 
     private firebaseAdmin: admin.app.App;
 
-    constructor({ firebaseAdmin }: PushNoticationExecutorConfigI) {
+    constructor({ firebaseAdmin }: PushNotificationExecutorConfigI) {
         this.name = 'PushNotification';
         this.firebaseAdmin = firebaseAdmin;
     }
@@ -22,4 +22,4 @@ class PushNoticationExecutor implements TaskExecutorI {
     }
 }
 
-export default PushNoticationExecutor;
+export default PushNotificationExecutor;

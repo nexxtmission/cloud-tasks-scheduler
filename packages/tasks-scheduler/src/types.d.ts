@@ -71,7 +71,7 @@ export interface TaskSchedulerConfigI {
     };
 }
 
-export interface PushNoticationExecutorConfigI {
+export interface PushNotificationExecutorConfigI {
     firebaseAdmin: admin.app.App;
 }
 
