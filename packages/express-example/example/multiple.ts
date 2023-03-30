@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment, no-console */
-import { TaskScheduler, SmsNotificationExecutor, PushNoticationExecutor } from 'cloud-tasks-scheduler';
+import { TaskScheduler, SmsNotificationExecutor, PushNotificationExecutor } from 'cloud-tasks-scheduler';
 import twilio from 'twilio';
 import admin from 'firebase-admin';
 // @ts-ignore
@@ -26,7 +26,7 @@ const scheduler = new TaskScheduler({
     defaultQueue: 'testing-queue',
     serviceAccount,
     executors: [
-        new PushNoticationExecutor({
+        new PushNotificationExecutor({
             firebaseAdmin,
         }),
         new SmsNotificationExecutor({

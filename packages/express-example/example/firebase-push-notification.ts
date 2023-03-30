@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment, no-console */
 import admin from 'firebase-admin';
-import { TaskScheduler, PushNoticationExecutor } from 'cloud-tasks-scheduler';
+import { TaskScheduler, PushNotificationExecutor } from 'cloud-tasks-scheduler';
 // @ts-ignore
 import serviceAccount from './service-account.json';
 // @ts-ignore
@@ -16,7 +16,7 @@ const registrationToken = '';
 const scheduler = new TaskScheduler({
     defaultQueue: 'testing-queue',
     serviceAccount,
-    executors: [new PushNoticationExecutor({
+    executors: [new PushNotificationExecutor({
         firebaseAdmin,
     })],
     webhook: {
